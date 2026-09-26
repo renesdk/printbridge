@@ -17,8 +17,13 @@ the image for you. You do not build an image on the NAS or buy a domain.
 2. Download and install [GitHub Desktop](https://desktop.github.com/). Open it
    and sign in to your GitHub account.
 3. Choose **File → Add local repository → Choose** and select the extracted
-   `printbridge` folder. If GitHub Desktop says it is not a repository, choose
-   **Create a repository here**. Set its name to `printbridge`.
+   `printbridge` folder (the one containing `Dockerfile`). The message
+   **"This directory does not appear to be a Git repository"** is expected.
+   Click the blue **create a repository** link in that message, **not** the
+   **Add repository** button. In the next dialog, leave **Local path** as it
+   is; choosing the same folder again can create an accidental nested folder.
+   Click **Create repository**. Check that `Dockerfile` is still in the
+   repository root, not inside a second `printbridge` folder.
 4. Under **Changes**, check that `Dockerfile`, `app/web.py`, and
    `.github/workflows/image.yml` appear. Enter `First prototype` in **Summary**
    and click **Commit to main**.
@@ -61,21 +66,31 @@ is `ghcr.io/your_username/printbridge:v0.1.0` with a lowercase username.
 2. Connect and power on the USB printer. Verify that the TrueNAS **Apps** page
    works. If TrueNAS asks for an Apps pool, select the pool used for your other
    apps and wait until initialization completes.
-3. Open `custom-app.yaml.template` in Windows Notepad and replace **only** the
-   three values starting with `REPLACE`:
+3. On the **same Windows PC** where you extracted the ZIP in Stage 1, open
+   **File Explorer** (Windows key + E). Navigate to the extracted `printbridge`
+   folder, the one that contains `Dockerfile`. Find
+   `custom-app.yaml.template` in that folder. If file extensions are hidden,
+   turn them on using **View → Show → File name extensions**.
+4. Right-click `custom-app.yaml.template` → **Open with → Notepad**. If Notepad
+   is not listed, choose **Choose another app → Notepad**. You are editing the
+   copy on your Windows PC; there is no need to locate this file on TrueNAS.
+5. In Notepad replace **only** the three values starting with `REPLACE`:
 
    - `REPLACE_GITHUB_USERNAME`: your lowercase GitHub username.
    - `REPLACE_WITH_LONG_LETTERS_AND_DIGITS_PASSWORD`: a unique password of at
      least 20 letters/digits. Save it in your password manager.
    - `REPLACE_WITH_TRUENAS_LAN_IP`: the LAN IP from step 1.
 
-4. Select and copy the entire edited YAML.
-5. In TrueNAS open **Apps → Discover → ⋮ → Install via YAML**. Set **Name** to
+6. Press **Ctrl+S** to save. If Notepad offers **Save as**, choose **All files**
+   as the file type and keep the exact name `custom-app.yaml.template` in the
+   same folder. Press **Ctrl+A**, then **Ctrl+C** to copy all the YAML text.
+7. Switch to the TrueNAS browser tab on the same Windows PC. Open
+   **Apps → Discover → ⋮ → Install via YAML**. Set **Name** to
    `printbridge`, paste the YAML into the editor, and click **Save/Install**.
    TrueNAS downloads the prebuilt image from GHCR.
-6. Wait for the app status to become **Running**. From Windows open
+8. Wait for the app status to become **Running**. From Windows open
    `http://NAS-IP:8080/`, replacing `NAS-IP` with the actual address. Sign in
-   as `admin` with the password from step 3. A YAML-installed Custom App may
+   as `admin` with the password from step 5. A YAML-installed Custom App may
    not show a Web UI button, so use the address directly.
 
 **If installation fails:** Check that the image tag exists, the GHCR package is
@@ -91,10 +106,11 @@ through a public reverse proxy. Use a password you do not use elsewhere.
 ## Stage 4 — Add the printer and test Windows 11
 
 1. At `http://NAS-IP:8080/`, click **Add printer**.
-2. **Search drivers** for `HL-2035` before filling in the other form fields.
-   Select the exact Brother model if present. If it is absent, stop and record
-   the displayed results. Do not pick a random model: Brother's separate
-   proprietary driver is not included in this image.
+2. **Search drivers** for `HL-2030`. Brother HL-2035 identifies itself over
+   USB as `HL-2030 series`. Select **Brother HL-2030 series, brlaser** and
+   verify the selection with a physical test page. This image builds the
+   pinned upstream pdewacht/brlaser v6 release; it does not include Brother's
+   proprietary driver.
 3. Enter queue name `Brother_HL2035`, select the detected `usb://Brother/...`
    device, choose the matching driver, and click **Add printer**.
 4. Return to **My printers**, click **Test page**, and confirm that paper

@@ -5,9 +5,10 @@ Add a USB or network printer in the web UI; add more printers later without
 resetting existing queues. Print PDFs from an Android phone through the mobile
 web page. Windows clients can connect using a CUPS IPP queue.
 
-**Status: pre-release prototype.** No physical HL-2035, TrueNAS deployment,
-Windows 11 client, or Android native Print-menu flow has been verified. A
-successful unit test or a listed driver does not establish printer compatibility.
+**Status: pre-release prototype.** The upstream brlaser variant has not been
+built or physically verified here. In one TrueNAS HL-2035 test, the USB device
+disconnected during print; using upstream brlaser may not resolve that fault.
+A successful build or a listed driver does not establish compatibility.
 
 ## Start here
 
@@ -16,9 +17,14 @@ covers source upload, an automated GitHub image build, GHCR visibility, the
 TrueNAS Custom App YAML, printer setup, and physical Windows/Android tests.
 GitHub builds the image. The end user does not compile it on the NAS.
 
+Already running `v0.1.0`? Follow the [upstream brlaser upgrade guide](docs/UPGRADE-UPSTREAM-BRLASER.md).
+
 ## Included features
 
-- CUPS, Gutenprint, brlaser, and foo2zjs in one container.
+- CUPS, Gutenprint, foo2zjs, and upstream brlaser v6, built from the pinned
+  [pdewacht/brlaser](https://github.com/pdewacht/brlaser) commit
+  `23117fe9e0266396e4791cdae84d979928aed135`, in one container. The
+  build tools are left behind in a separate build stage.
 - A small English web UI at port 8080 to add queues and send test pages.
 - Existing queues persist under `/etc/cups`; pending jobs under `/var/spool/cups`.
 - PDF upload from a phone at `/mobile`, limited to 20 MB.
