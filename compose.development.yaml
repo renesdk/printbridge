@@ -1,0 +1,27 @@
+# Developer-only local smoke test. End users must install a released catalog app.
+services:
+  printbridge:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "631:631"
+      - "8080:8080"
+    environment:
+      PRINTBRIDGE_ADMIN_PASSWORD: "${PRINTBRIDGE_ADMIN_PASSWORD:?Set a password in the developer environment}"
+    volumes:
+      - cups_config:/etc/cups
+      - cups_spool:/var/spool/cups
+      - /dev/bus/usb:/dev/bus/usb
+    device_cgroup_rules:
+      - "c 189:* rwm"
+    mem_limit: 512m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "lpstat", "-r"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  cups_config:
+  cups_spool:

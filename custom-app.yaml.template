@@ -1,0 +1,27 @@
+# TrueNAS 25.10 > Apps > Discover > menu > Install via YAML
+# Replace the three REPLACE values before installation.
+services:
+  printbridge:
+    image: ghcr.io/REPLACE_GITHUB_USERNAME/printbridge:v0.1.0
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      PRINTBRIDGE_ADMIN_PASSWORD: "REPLACE_WITH_LONG_LETTERS_AND_DIGITS_PASSWORD"
+      PRINTBRIDGE_ADVERTISE_IP: "REPLACE_WITH_TRUENAS_LAN_IP"
+    volumes:
+      - config:/etc/cups
+      - spool:/var/spool/cups
+      - /dev/bus/usb:/dev/bus/usb
+    device_cgroup_rules:
+      - "c 189:* rwm"
+    mem_limit: 512m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "lpstat", "-r"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  config:
+  spool:
